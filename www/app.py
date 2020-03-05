@@ -18,7 +18,7 @@ def init():
     app = web.Application()
     app.add_routes([web.get('/', index)])
     logging.info('server started at http://127.0.0.1:9257...')
-    web.run_app(app, host='127.0.0.1', port=9527)
+    web.run_app(app, host='127.0.0.1', port=9000)
 
 
 init()
