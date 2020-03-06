@@ -3,12 +3,18 @@
 
 import asyncio, logging
 import aiomysql
+
+#python 的全局变量定义的时候直接在函数外定义，不用global关键字。global关键子用于在函数内部访问或者修改全局变量时使用
 __pool = None
+
+#在控制台打印出sql的信息
 def log(sql, args=()):
     logging.info('SQL: %s' % sql)
-
+#创建数据库连接池，这样可以提升效率，最大效率的利用已有的链接。比如：如果不用连接池，每一个请求都建立一个数据库连接，io操作后
+#再关闭，但是用了连接池之后，一旦有需要获得数据库连接时候，直接从连接池里取，连接池里如果没有连接才会创建。
 async def create_pool(loop, **kw):
     logging.info('create database connection pool...')
+    #读取全局变量的申明
     global __pool 
     __pool = await aiomysql.create_pool(
         host=kw.get('host', 'localhost'),
@@ -23,11 +29,16 @@ async def create_pool(loop, **kw):
         loop=loop
     )
 
+#执行select语句的函数，返回查询的结果
 async def select(sql, args, size=None):
     log(sql, args)
     global __pool
+    #获取数据库连接
     async with __pool.get() as conn:
+        #获取数据库游标
+        #A cursor which returns results as a dictionary
         async with conn.cursor(aiomysql.DictCursor) as cur:
+            #因为mysql的占位符是'?'，所以压要将'%s'替换成'?'。之后再利用cur执行sql语句
             await cur.execute(sql.replace('?', '%s'), args or ())
             if size:
                 rs = await cur.fetchmany(size)
@@ -35,7 +46,8 @@ async def select(sql, args, size=None):
                 rs = await cur.fetchall()
         logging.info('rows returned: %s' % len(rs))
         return rs
-
+#执行处select之外的其他语句，因为update, delete, insert这些操作期待的返回值都是影响的行数(或者成功与否)
+#所以可以用同一个执行函数来执行这三种操作，返回值：如果操作成功返回数据表中受影响的行数，如果操作失败raise error
 async def execute(sql, args, autocommit=True):
     log(sql)
     async with __pool.get() as conn:
@@ -52,7 +64,7 @@ async def execute(sql, args, autocommit=True):
                 await conn.rollback()
             raise
         return affected
-
+#
 def create_args_string(num):
     L = []
     for n in range(num):
