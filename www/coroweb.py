@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'Michael Liao'
-
 import os
 import inspect
 import logging
@@ -51,7 +49,7 @@ def post(path):
 def get_required_kw_args(fn):
     args = []
     params = inspect.signature(fn).parameters
-    # 如果url处理函数需要传入关键字参数，且默认是空的话，获取这个key
+    # 如果url处理函数需要传入命名关键字参数，且默认是空的话，获取这个key
     for name, param in params.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY and param.default == inspect.Parameter.empty:
             args.append(name)
@@ -61,7 +59,7 @@ def get_required_kw_args(fn):
 def get_named_kw_args(fn):
     args = []
     params = inspect.signature(fn).parameters
-    # 如果url处理函数需要传入关键字参数，获取这个key
+    # 如果url处理函数需要传入命名关键字参数，获取这个key
     for name, param in params.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY:
             args.append(name)
@@ -70,7 +68,7 @@ def get_named_kw_args(fn):
 
 def has_named_kw_args(fn):
     params = inspect.signature(fn).parameters
-    # 判断是否有关键字参数
+    # 判断是否有命名关键字参数
     for name, param in params.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY:
             return True
@@ -78,7 +76,7 @@ def has_named_kw_args(fn):
 
 def has_var_kw_arg(fn):
     params = inspect.signature(fn).parameters
-    # 判断是否有关键字变长参数，VAR_KEYWORD对应**kw
+    # 判断是否有关键字参数，VAR_KEYWORD对应**kw
     for name, param in params.items():
         if param.kind == inspect.Parameter.VAR_KEYWORD:
             return True
