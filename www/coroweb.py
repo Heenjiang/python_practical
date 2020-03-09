@@ -99,7 +99,8 @@ def has_request_arg(fn):
     return found
 
 
-# RequestHandler目的就是从URL处理函数（如handlers.index）中分析其需要接收的参数，从web.request对象中获取必要的参数，
+# RequestHandler目的就是从URL处理函数（如handlers.index）中分析其需要接收的参数，
+# 从web.request对象中获取必要的参数，
 # 调用URL处理函数，然后把结果转换为web.Response对象，这样，就完全符合aiohttp框架的要求
 class RequestHandler(object):
 
