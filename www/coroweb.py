@@ -212,6 +212,7 @@ def add_route(app, fn):
 
 
 def add_routes(app, module_name):
+    #返回module_name中'.'的下标
     n = module_name.rfind('.')
     if n == (-1):
         # __import__ 作用同import语句，但__import__是一个函数，并且只接收字符串作为参数,
@@ -221,12 +222,17 @@ def add_routes(app, module_name):
     else:
         name = module_name[n+1:]
         mod = getattr(__import__(module_name[:n], globals(), locals(), [name]), name)
+    #dir() 返回当前对象的所有属性集合
     for attr in dir(mod):
+        #如果属性以_开始，说明不是url处理函数
         if attr.startswith('_'):
             continue
         fn = getattr(mod, attr)
+        #如果fn是可以被调用的对象
         if callable(fn):
+            #再次判断是不是url处理函数
             method = getattr(fn, '__method__', None)
             path = getattr(fn, '__route__', None)
             if method and path:
+                #调用上面的add_route()注册url处理函数
                 add_route(app, fn)
