@@ -1,4 +1,7 @@
 {
     "files.autoSave": "onFocusChange",
-    "python.autoComplete.extraPaths": ["./www"]
+    "python.autoComplete.extraPaths": [
+        "./www"
+    ],
+    "python.pythonPath": "C:\\Users\\Enjiang He\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe"
 }

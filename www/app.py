@@ -47,6 +47,12 @@ def init_jinja2(app, **kw):
             env.filters[name] = f
     app['__templating__'] = env
 #中间件声明
+#中间件理解：在浏览器端的请求通过http到服务器的时候，请求相当于是一个事件，被服务器端，9001端口运行的asyncio.get_event_loop()
+#对象监听到，loop对象随之调用app的handler（就是一个包含了所有url处理函数或者api处理函数的对象）
+#然后由于中间件在app中已经被注册了，所以请求开始通过所有的中间件。比如logger factory...
+#在中间件中，对请求可以任意操作，比如验证参数，甚至是终止请求直接返回response。
+#可以注意到，在中间件函数的生命中，对请求处理后，会继续调用handler(request)，相当于把请求传递下去给url函数或者api函数
+#执行（注意这里的执行是异步的）
 async def logger_factory(app, handler):
     async def logger(request):
         logging.info('Request: %s %s' % (request.method, request.path))
@@ -114,6 +120,7 @@ async def response_factory(app, handler):
                 return resp
             #利用返回的dict数据渲染指定的模板
             else:
+                r['user'] = request.__user__
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
                 return resp
