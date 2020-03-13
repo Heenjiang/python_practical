@@ -120,7 +120,8 @@ async def response_factory(app, handler):
                 return resp
             #利用返回的dict数据渲染指定的模板
             else:
-                r['user'] = request.__user__
+                r['__user__'] = request.__user__
+                print(r['__user__'])
                 resp = web.Response(body=app['__templating__'].get_template(template).render(**r).encode('utf-8'))
                 resp.content_type = 'text/html;charset=utf-8'
                 return resp
@@ -154,7 +155,7 @@ async def init(loop):
     await orm.create_pool(loop=loop, host='127.0.0.1', port=3306, user='root', password='120788', db='awesome')
     #利用aiohttp模块的web创建应用，并注册中间 件函数
     app = web.Application(loop=loop, middlewares=[
-        logger_factory, response_factory
+        logger_factory, auth_factory, data_factory, response_factory
     ])
     #初始化jinjia2模板，注册模板的filter
     init_jinja2(app, filters=dict(datetime=datetime_filter))
