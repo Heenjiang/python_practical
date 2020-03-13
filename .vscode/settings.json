@@ -3,5 +3,7 @@
     "python.autoComplete.extraPaths": [
         "./www"
     ],
-    "python.pythonPath": "C:\\Users\\Enjiang He\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe"
+    "python.pythonPath": "C:\\Users\\Enjiang He\\AppData\\Local\\Programs\\Python\\Python38-32\\python.exe",
+    "editor.fontSize": 15,
+    "vetur.validation.template": false,//vscode中关于vue的一个语法检查插件，v-for的错可以解决
 }

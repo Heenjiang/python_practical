@@ -71,6 +71,7 @@ async def auth_factory(app, handler):
             if user:
                 logging.info('set current user: %s' % user.email)
                 request.__user__ = user
+        #python中bool(0) === False, bool(other integer) == True 
         if request.path.startswith('/manage/') and (request.__user__ is None or not request.__user__.admin):
             return web.HTTPFound('/signin')
         return (yield from handler(request))
@@ -113,6 +114,7 @@ async def response_factory(app, handler):
         #如果处理函数返回的是一个dict
         if isinstance(r, dict):
             template = r.get('__template__')
+            print(template)
             #如果返回的dict没有指定渲染模板，就是Api函数返回的json数据
             if template is None:
                 resp = web.Response(body=json.dumps(r, ensure_ascii=False, default=lambda o: o.__dict__).encode('utf-8'))
